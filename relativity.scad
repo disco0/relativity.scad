@@ -28,6 +28,7 @@ _token_regex_ignore_space = _parse_rx("\\w+|\\S");
 _token_regex = _parse_rx("\\w+|\\S|\\s+");
 function tokenize(string, ignore_space=true) =
     _tokenize(string, ignore_space? _token_regex_ignore_space : _token_regex);
+
 function _tokenize(string, pattern) =
     _grep(string, _index_of(string, pattern, regex=true));
 
@@ -807,15 +808,46 @@ module resized(newsize, class="*"){
   _child_wrapper() children();
 }
 
-module hulled(class="*"){
-    _assign($_ancestor_classes = _push($_ancestor_classes, _tokenize($class, _token_regex_ignore_dash)))
-  if(_sizzle_engine($_ancestor_classes, $_show))
-  hull()
-  _assign($_show=_sizzle_parse(class))
-  _child_wrapper() children();
+module hulled(class="*") {
+  _assign($_ancestor_classes = _push($_ancestor_classes, _tokenize($class, _token_regex_ignore_dash)))
+
+  if(_sizzle_engine($_ancestor_classes, $_show)) {
+    hull()
+      _assign($_show=_sizzle_parse(class))
+      _child_wrapper()
+      children();
+  }
 
   hide(class)
-  _child_wrapper() children();
+    _child_wrapper()
+    children();
+}
+
+module _chainedHull() {
+  // let i be the index of each of our children, but the last one
+  union() {
+    for(i=[0:$children-2])
+      hull() {
+        // we then create a hull between child i and i+1
+        children(i); // use child() in older versions of Openscad!
+        children(i+1); // this shape is i in the next iteration!
+      }
+  }
+}
+
+module chainedHull(class="*") {
+  _assign($_ancestor_classes = _push($_ancestor_classes, _tokenize($class, _token_regex_ignore_dash)))
+
+  if(_sizzle_engine($_ancestor_classes, $_show)) {
+    chainedHullhull()
+      _assign($_show=_sizzle_parse(class))
+      _child_wrapper()
+      children();
+  }
+
+  hide(class)
+    _child_wrapper()
+    children();
 }
 
 // performs the union on objects marked as positive space (i.e. objects where $class = positive),
