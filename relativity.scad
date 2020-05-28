@@ -169,7 +169,7 @@ function _parse_rx( rx,     ops=[],   args=[],        i=0) =
   : ops[0] == "[" || ops[0] == "[^"?
     rx[i] == "]"?
       _parse_rx(rx, _pop(ops),  _push_rx_op(args, ops[0]),    i+1)
-    : rx[i] == "\\"?
+    : rx[i] == "\\" ?
       _parse_rx(rx, ops,    _swap(args, _push(args[0],rx[i+1])),  i+2)
     : rx[i] == "-"?
       _parse_rx(rx, ops,    _swap(args, _push(_pop(args[0]), ["-", args[0][0], rx[i+1]])), i+2)
@@ -248,14 +248,17 @@ function _push_rx_op(stack, op) =
 
 function _swap(stack, replacement) =
   _push(_pop(stack), replacement);
+
 function _pop(stack, n=1) =
-  n <= 1?
-    len(stack) <=0? [] : stack[1]
+  n <= 1 ?
+    len(stack) <= 0 ? [] : stack[1]
   :
     _pop(_pop(stack), n-1)
   ;
-function _push(stack, char) =
-  [char, stack];
+
+// stack = [any, arr];
+// _push(stack, char) => [char, stack];
+function _push(stack, char) = [char, stack];
 
 function _precedence(op, ops) =
   search(op, ops)[0];
@@ -707,9 +710,10 @@ function ensureArrOfArr(arr) = is_undef(arr.x) || is_list(arr.x) ? arr : [ arr ]
 
 module selectable(){
     _assign(
-        $_ancestor_classes = _push($_ancestor_classes,
-            _tokenize($class, _token_regex_ignore_dash)
-        )
+      $_ancestor_classes = _push(
+        $_ancestor_classes,
+        _tokenize($class, _token_regex_ignore_dash)
+      )
     )
     if(_sizzle_engine($_ancestor_classes, $_show))
         children();
@@ -1050,11 +1054,11 @@ module ball(size=[1,1,1],
 
 
 
-module _assign(){
-    children();
+module _assign() {
+  children();
 }
 
-//matrix rotation functions
+// matrix rotation functions
 function _rotate_x_matrix(a)=
               [[1,0,0,0],
                       [0,cos(a),-sin(a),0],
