@@ -811,18 +811,19 @@ function _parse_int(string, base, i=0, nb=0) =
 	: 
 		nb + _parse_int(string, base, i+1, 
 				search(string[i],"0123456789ABCDEF")[0]*pow(base,len(string)-i-1));
-                
-function join(strings, delimeter="") = 
-	strings == undef?
-		undef
-	: strings == []?
-		""
-	: _join(strings, len(strings)-1, delimeter, 0);
-function _join(strings, index, delimeter) = 
-	index==0 ? 
-		strings[index] 
-	: str(_join(strings, index-1, delimeter), delimeter, strings[index]) ;
-	
+
+function join(strings, delimeter="") =
+  strings == undef ?
+    undef
+  : strings == []?
+    ""
+  : _join(strings, len(strings) - 1, delimeter);
+
+function _join(strings, index, delimeter) =
+  index ==0 ?
+    strings[index] :
+    str(_join(strings, index-1, delimeter), delimeter, strings[index]) ;
+
 function is_in(string, list, ignore_case=false) = 
 	string == undef?
 		false
